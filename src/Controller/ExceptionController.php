@@ -20,7 +20,8 @@ class ExceptionController extends BaseExceptionController
     public function __construct(Environment $twig, bool $debug = null)
     {
         if($debug === null) {
-            $debug = $twig->getGlobals()['app']->getDebug();
+            $env   = $_SERVER['APP_ENV'] ?? 'dev';
+            $debug = (bool) ($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
         }
         $this->twig = $twig;
         $this->debug = $debug;
