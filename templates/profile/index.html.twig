@@ -1,0 +1,42 @@
+{% extends 'toolbar.html.twig' %}
+
+{% block title %}Your profile{% endblock title %}
+{% block body %}
+    {{ parent() }}
+
+    <main id="profile" class="box">
+        <h1>Your profile</h1>
+
+        {% include 'inc.flash.html.twig' %}
+        <form class="form large-form" method="post" action="{{ path('profile_submit') }}">
+
+            {% if errors and errors._csrf_token is defined %}
+                <p class="error">{% for err in errors._csrf_token %}{{ err }}<br>{% endfor %}</p>
+            {% endif %}
+
+            <div class="form-row">
+                <label for="current_password">Current password:</label>
+                <input type="password" id="current_password" name="current_password" required />
+            </div>
+            {% if errors and errors.currentPassword is defined %}
+                <p class="error">{% for err in errors.currentPassword %}{{ err }}<br>{% endfor %}</p>
+            {% endif %}
+
+            <div class="form-row">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            {% if errors and errors.plainPassword is defined %}
+                <p class="error">{% for err in errors.plainPassword %}{{ err }}<br>{% endfor %}</p>
+            {% endif %}
+
+            <div class="form-row">
+                <label for="password_confirm">Confirm password:</label>
+                <input type="password" id="password_confirm" name="password_confirm" required />
+            </div>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('udpate_password') }}">
+            <button type="submit" class="btn">Save</button>
+        </form>
+    </main>
+{% endblock body %}

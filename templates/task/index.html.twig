@@ -1,0 +1,158 @@
+{% extends 'toolbar.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+
+    <main id="tasks" class="box">
+        <div class="action-bar">
+            <a href="{{ path('new_task') }}" class="btn">Create task</a>
+        </div>
+        <h1>Tasks</h1>
+
+        {% if projectId == 0 %}
+            <p class="alert alert-warning">There is no active project</p>
+        {% elseif filtersQuery == '' and tasks|length == 0 %}
+            <p class="alert alert-warning">There is no task</p>
+        {% else %}
+
+            <form class="filters form" action="{{ path('tasks') }}">
+                <div class="inline form-row">
+                    <label for="filter_title">Title:</label>
+                    <input id="filter_title" name="title" type="text" value="{{ filters.title }}">
+                </div>
+                <div class="inline form-row">
+                    <label for="filter_status">Status:</label>
+                    <select id="filter_status" name="status" autocomplete="off">
+                        <option></option>
+                        {% for code, txt in STATUS %}
+                            <option value="{{ code }}"{% if code === filters.status %} selected{% endif %}>{{ txt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="inline form-row">
+                    <label for="filter_assignment">To:</label>
+                    <select id="filter_assignment" name="assignment" autocomplete="off">
+                        {% for user in users %}
+                            <option value="{{ user.id }}"{% if user.id == filters.assignment %} selected{% endif %}>
+                                {{ user.firstName }} {{ user.lastName }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="icon-btn" title="Submit">&#9032;</button>
+            </form>
+
+            {% set pagination %}
+                <div class="pagination">
+                    <span class="nbtasks">{{ nbtasks }} item{% if nbtasks > 1 %}s{% endif %}</span>
+
+                    {% if nbpages != 0 %}
+                        <span class="page">
+                            Page
+                            &nbsp;
+                            {% set fromPage = page > 2 ? page - 2 : 1 %}
+                            {% set toPage   = page + 2 > nbpages ? nbpages : page + 2 %}
+
+                            <ul>
+                                {% if page > 1 %}
+                                    <li class="side left" title="First page"><a href="?page=1{{ filtersQuery }}">&Lt;</a></li>
+                                    <li class="side left" title="Previous page"><a href="?page={{ page - 1}}{{ filtersQuery }}">prev.</a></li>
+                                {% endif %}
+
+                                {% for i in range(fromPage, toPage) %}
+                                    <li title="Page {{ i }}"{% if i == page %} class="active"{% endif %}><a href="?page={{ i }}{{ filtersQuery }}">{{ i }}</a></li>
+                                {% endfor %}
+
+                                {% if page != nbpages %}
+                                    <li class="side right" title="Next page"><a href="?page={{ page + 1}}{{ filtersQuery }}">next</a></li>
+                                    <li class="side right" title="Last page"><a href="?page={{ nbpages }}{{ filtersQuery }}">&Gt;</a></li>
+                                {% endif %}
+                            </ul>
+                        </span>
+                    {% endif %}
+                    <span class="nbpages">{{ nbpages }} page{% if nbpages > 1 %}s{% endif %}</span>
+                    <span class="goto form">
+                        <form method="post" action="{{ path('goto_task') }}">
+                            <input name="task" type="text" placeholder="Goto task #"></span>
+                        </form>
+                    </span>
+                </div>
+            {% endset %}
+            {{ pagination }}
+
+            {% if tasks|length > 0 %}
+                <table class="list">
+                    <thead>
+                        {% set headers = [
+                            ['type', 'Type'],
+                            ['urgency', 'Urg.'],
+                            ['id', 'ID'],
+                            ['date', 'Date'],
+                            ['title', 'Title'],
+                            ['assigned_to', 'Assigned to'],
+                            ['status', 'Status']
+                        ] %}
+                        <tr>
+                            {% for header in headers %}
+                                {% set key, value = header[0], header[1] %}
+
+                                <th class="{{ key }}{% if sort == key %} active {{ sort_desc ? 'sort-desc': 'sort-asc' }}{% endif %}">
+                                    <a href="?sort={{ key }}{% if sort == key and not sort_desc %}&sort_desc{% endif %}{{ filtersQuery }}">{{ value }}</a>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {%- for task in tasks %}
+                        {%- set link = path('edit_task', {'taskId': task.id}) -%}
+                        <tr class="row status-{{ task.status }}">
+                            <td class="small type resp-inline">
+                                <a href="{{ link }}"><span title="{{ TYPE[task.type] }}">
+                                    {% if task.type == 0 %}&#9888;&#xFE0E;
+                                    {% elseif task.type == 1 %}&#65291;&#xFE0E;
+                                    {% elseif task.type == 2 %}&#128161;&#xFE0E;
+                                    {% else %}&#128393;&#xFE0E;{% endif %}
+                                </span></a>
+                            </td>
+                            <td class="small urgency resp-inline">
+                                <a href="{{ link }}">
+                                    <span title="{{ URGENCY[task.urgency] }}" class="icon-urgency icon-urgency-{{ task.urgency }}">{{ task.urgency }}</span>
+                                </a>
+                            </td>
+                            <td class="id resp-inline">
+                                <a href="{{ link }}">{{ "%06d"|format(task.id) }}</a>
+                            </td>
+                            <td class="date">
+                                <a href="{{ link }}">
+                                    <time datetime="{{ task.date_creation.format('Y-m-d\TH:i:sP') }}">
+                                        {{ task.date_creation.format('Y-m-d') }}
+                                    </time>
+                                </a>
+                            </td>
+                            <td class="title">
+                                <a href="{{ link }}">{{ task.title }}</a>
+                            </td>
+                            <td class="user">
+                                <a href="{{ link }}">
+                                    {% if task.assigned_to %}
+                                        {{ task.assigned_to.firstName }} {{ task.assigned_to.lastName|slice(0, 1) }}.
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </a>
+                            </td>
+                            <td class="status">
+                                <a href="{{ link }}">{{ STATUS[task.status] }}</a>
+                            </td>
+                        </tr>
+                    {% endfor -%}
+                </tbody>
+                </table>
+                {% if tasks|length > 5 %}
+                    {{ pagination }}
+                {% endif %}
+            {% endif %}
+
+        {% endif %}
+    </main>
+{% endblock body %}

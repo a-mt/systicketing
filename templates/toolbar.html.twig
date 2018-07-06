@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <!-- Topbar -->
+    <header id="topbar">
+        <div class="title">
+            <a href="/">Issue Tracker</a>
+        </div>
+
+        <form class="form" action="{{ path('switch_project') }}" method="post" autocomplete="off">
+            {{ render(controller('App\\Controller\\ProjectController::selectProject')) }}
+        </form>
+
+        <div id="loggedin_user">
+
+            <!-- Menu -->
+            <div id="menu_user">
+                <div class="toolbox">
+                    <div class="header">Logged in as <strong>{{ app.user.firstName }} {{ app.user.lastName }}</strong></div>
+                    <ul class="list">
+                        <li><a href="{{ path('profile') }}">Your profile</a></li>
+                        {% if app.user.status == 2 %}
+                            <li><a href="{{ path('projects') }}">Manage projects</a></li>
+                            <li><a href="{{ path('users') }}">Manage users</a></li>
+                        {% endif %}
+                    </ul>
+                    <div class="action">
+                        <a href="/logout" class="btn">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content -->
+{%- endblock body %}

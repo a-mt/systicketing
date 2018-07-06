@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<!-- HEAD -->
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Home{% endblock %} | Ticketing</title>
+        {% block stylesheets -%}
+            <link href="{{ asset('css/main.css') }}" rel="stylesheet" />
+        {% endblock %}
+
+    </head>
+    <body>
+<!-- BODY -->
+        {% block body %}{% endblock %}
+
+<!-- JAVASCRIPT -->
+        {% block javascript %}{% endblock %}
+    </body>
+</html>

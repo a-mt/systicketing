@@ -1,0 +1,32 @@
+{% if internal %}
+    <p class="small">Only support users can see this</p>
+{% endif %}
+
+{% for discuss in task.filterDiscusses(internal) %}
+    <div class="discuss">
+        <div class="discuss-header">
+            <time datetime="{{ date.format('Y-m-d\TH:i:sP') }}">
+                {{ date.format('Y-m-d') }}
+            </time>
+            - {{ discuss.createdBy.firstName }} {{ discuss.createdBy.lastName }}
+        </div>
+        <div class="text">{{ discuss.text }}</div>
+    </div>
+{% endfor %}
+
+<div class="discuss">
+    <div class="discuss-header">
+        <time datetime="{{ date.format('Y-m-d\TH:i:sP') }}">
+            {{ date.format('Y-m-d') }}
+        </time>
+        - {{ app.user.firstName }} {{ app.user.lastName }}
+    </div>
+    <input type="hidden" name="discuss_internal" value="{{ internal ? 1 : 0}}">
+    <textarea id="edit" name="discuss" class="text" maxlength="65535"></textarea>
+</div>
+
+<script>
+window.addEventListener("load", function(){
+  addCounter(document.getElementById('edit'));
+});
+</script>

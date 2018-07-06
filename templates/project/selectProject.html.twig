@@ -1,0 +1,10 @@
+{% if projects %}
+<select name="projectId" onchange="this.parentNode.submit()">
+    {% for project in projects %}
+        <option value="{{ project.id }}"{% if project.id == active %} selected{% endif %}>{{ project.name }}</option>
+    {% endfor %}
+</select>
+<noscript>
+    <button type="submit" class="submit">Switch</button>
+</noscript>
+{% endif %}

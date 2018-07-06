@@ -1,0 +1,88 @@
+{% extends 'toolbar.html.twig' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block body %}
+    {{ parent() }}
+
+    <script>
+    window.addEventListener("load", function(){
+      addCounter(document.getElementById('form_description'));
+    });
+
+    function addCounter(element) {
+      var format = new Intl.NumberFormat(),
+          max    = element.getAttribute("maxlength");
+      if(!max) {
+        return;
+      }
+      max = format.format(max);
+
+      // Add counter
+      var count  = document.createElement('span');
+      count.className = "count";
+      count.innerHTML = format.format(element.value.length) + "/" + max + ' chars.';
+      element.parentNode.appendChild(count);
+
+      // Update counter when writing
+      element.addEventListener('keyup', function(){
+        count.innerHTML = format.format(this.value.length) + "/" + max + ' chars.';
+      });
+    }
+    </script>
+
+    <main id="tasks" class="box">
+        <div class="action-bar">
+            <a href="{{ path("tasks") }}">Back to list</a>
+        </div>
+        {% if form %}
+            <h1>{{ title }}</h1>
+
+            {% include 'inc.flash.html.twig' %}
+            <form method="POST" class="large-form form" enctype="multipart/form-data">
+
+                {# Global errors #}
+                {%- if form.vars.errors|length > 0 -%}
+                    <p class="alert alert-danger">
+                        {%- for error in form.vars.errors -%}
+                            {{ error.message }}<br>
+                        {%- endfor -%}
+                    </p>
+                {%- endif -%}
+
+                {# Update task Fields #}
+                {% for child in form %}
+                    {% if child.vars.name != 'save' %}{{ form_row(child) }}{% endif %}
+                {% endfor %}
+
+                {# Tabs: discuss, internal discuss, attachments, history #}
+                {% if taskId %}
+                    <br>
+                    <hr>
+                    <div class="tabs">
+                        <a href="?tab=discuss" class="tab{% if tab == 'discuss' %} active{% endif %}">Discuss</a>
+                        <a href="?tab=internal" class="tab{% if tab == 'internal' %} active{% endif %}">Internal notes</a>
+                        <a href="?tab=attach" class="tab{% if tab == 'attach' %} active{% endif %}">Attachments</a>
+                        <a href="?tab=history" class="tab{% if tab == 'history' %} active{% endif %}">History</a>
+                    </div>
+                    <div id="tab_content">
+                        {% if tab == "discuss" %}
+                            {{ render(controller('App\\Controller\\TaskController::discuss', { 'taskId': taskId })) }}
+                        {% elseif tab == "internal" %}
+                            {{ render(controller('App\\Controller\\TaskController::discuss', { 'taskId': taskId, 'internal': true })) }}
+                        {% elseif tab =="attach" %}
+                            {{ render(controller('App\\Controller\\TaskController::attachments', { 'taskId': taskId })) }}
+                        {% elseif tab =="history" %}
+                            {{ render(controller('App\\Controller\\TaskController::history', { 'taskId': taskId })) }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {# Save #}
+                {{ form_row(form.save) }}
+            </form>
+        {% else %}
+            <p class="alert aler-danger">The task you're looking for doesn't exist</p>
+        {% endif %}
+    </main>
+{% endblock body %}

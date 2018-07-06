@@ -1,0 +1,29 @@
+{% extends 'toolbar.html.twig' %}
+
+{% block title %}Manage Projects{% endblock title %}
+
+{% block body %}
+    {{ parent() }}
+
+    <main id="projects" class="box">
+        <div class="action-bar">
+            <a href="{{ path('new_project') }}" class="btn">Create project</a>
+        </div>
+        <h1>Manage Projects</h1>
+
+        <div class="tabs">
+            <a href="{{ path('projects') }}" class="tab{{ archive ? '' : ' active' }}">Open</a>
+            <a href="{{ path('projects') }}?archive" class="tab{{ archive ? ' active' : '' }}">Archived</a>
+        </div>
+
+        {% if projects %}
+            <ul class="manage">
+                {% for project in projects %}
+                    <li><a href="{{ path('edit_project', {'projectId': project.id}) }}">{{ project.name }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="alert alert-warning inner">There is no project to display</p>
+        {% endif %}
+    </main>
+{% endblock body %}

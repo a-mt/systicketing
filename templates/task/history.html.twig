@@ -1,0 +1,56 @@
+<table id="history" class="list">
+    <thead>
+        {% set headers = [
+            ['date', 'Date'],
+            ['urgency', 'Urg.'],
+            ['type', 'Type'],
+            ['assigned_to', 'Assigned to'],
+            ['updated_by', 'Updated by'],
+            ['status', 'Status']
+        ] %}
+        <tr>
+            {% for header in headers %}
+                <th class="{{ header[0] }}">{{ header[1] }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+    {%- for h in task.getHistory()|reverse %}
+        <tr class="row status-{{ h.status }}">
+            <td class="date">
+                <time datetime="{{ h.date.format('Y-m-d\TH:i:sP') }}">
+                    {{ h.date.format('Y-m-d') }}
+                </time>
+            </td>
+            <td class="small urgency">
+                <span title="{{ URGENCY[h.urgency] }}" class="icon-urgency icon-urgency-{{ h.urgency }}">{{ h.urgency }}</span>
+            </td>
+            <td class="small type">
+                <span title="{{ TYPE[h.type] }}">
+                    {% if h.type == 0 %}&#9888;&#xFE0E;
+                    {% elseif h.type == 1 %}&#65291;&#xFE0E;
+                    {% elseif h.type == 2 %}&#128161;&#xFE0E;
+                    {% else %}&#128393;&#xFE0E;{% endif %}
+                </span>
+            </td>
+            <td class="user">
+                {% if h.assignedTo %}
+                    {{ h.assignedTo.firstName }} {{ h.assignedTo.lastName|slice(0, 1) }}.
+                {% else %}
+                    &nbsp;
+                {% endif %}
+            </td>
+            <td class="user">
+                {% if h.updatedBy %}
+                    {{ h.updatedBy.firstName }} {{ h.updatedBy.lastName|slice(0, 1) }}.
+                {% else %}
+                    &nbsp;
+                {% endif %}
+            </td>
+            <td class="status">
+                {{ STATUS[h.status] }}
+            </td>
+        </tr>
+    {% endfor -%}
+    </tbody>
+</table>

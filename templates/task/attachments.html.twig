@@ -1,0 +1,49 @@
+
+{% if files|length > 0 %}
+<table id="files" class="files">
+  {% for file in files %}
+    <tr class="file">
+      <td class="link"><a href="https://drive.google.com/file/d/{{ file.driveId }}/view?usp=drivesdk" target="_blank">{{ file.name }}</a></td>
+      <td class="info">
+        <button type="submit" class="small-btn delete"
+                name="delete_file" value="{{ file.driveId }}"
+                onclick="if(!confirm('Are you sure ?')) { return false; }">Delete</button>
+        Send by: {{ file.addedBy.firstName }} {{ file.addedBy.lastName }}<br>
+        On: {{ file.date.format('Y-m-d') }}<br>
+        Size: {{ file.filesize }}<br>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<hr>
+
+<div class="addfiles">
+  <button id="newfile" type="button" class="small-btn">Add a new file</button>
+  <small>Max 2M</small>
+</div>
+
+<script>
+window.addEventListener("load", function(){
+  var newfile = document.getElementById('newfile');
+
+  newfile.addEventListener('click', function(){
+    var div  = document.createElement('div'),
+        i    = this.parentNode.children.length - 1;
+
+    div.className = "addfile";
+    div.innerHTML = `<span class="remove">&times;</span>
+                     <input type="file" name="attachment[]">`;
+    this.parentNode.appendChild(div);
+  });
+
+  newfile.parentNode.addEventListener('click', function(e){
+    if (!e.target || e.target.className != 'remove') {
+      return;
+    }
+    e.stopPropagation();
+    e.target.parentNode.remove();
+  });
+});
+</script>

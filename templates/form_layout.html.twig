@@ -1,0 +1,41 @@
+{%- block form_row -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    {% set row_attr = row_attr|merge({'class': 'form-row' ~ (row_attr.class is defined ? ' ' ~ row_attr.class : '')} ) %}
+    <div class="{{ row_attr.class }}">
+        {{- form_label(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock form_row -%}
+
+{%- block form_errors -%}
+    {%- if errors|length > 0 -%}
+    <ul class="errors">
+        {%- for error in errors -%}
+            <li class="error">{{ error.message }}</li>
+        {%- endfor -%}
+    </ul>
+    {%- endif -%}
+{%- endblock form_errors -%}
+
+{%- block widget_container_attributes -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-inline')|trim}) -%}
+
+    {%- if id is not empty %}id="{{ id }}"{% endif -%}
+    {{ block('attributes') }}
+{%- endblock widget_container_attributes -%}
+
+{%- block choice_widget_expanded -%}
+    <div {{ block('widget_container_attributes') }}>
+    {%- for child in form %}
+        <span class="form-inline-widget">
+            {{- form_widget(child) -}}
+            {{- form_label(child, null, {translation_domain: choice_translation_domain}) -}}
+        </span>
+    {% endfor -%}
+    </div>
+{%- endblock choice_widget_expanded -%}

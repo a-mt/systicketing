@@ -1,0 +1,19 @@
+{% extends 'toolbar.html.twig' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block body %}
+    {{ parent() }}
+
+    <main id="projects" class="box">
+        <div class="action-bar">
+            <a href="{{ path("users") }}">Back to list</a>
+        </div>
+        <h1>{{ title }}</h1>
+
+        {% include 'inc.flash.html.twig' %}
+        <form method="POST" class="large-form form">
+            {{- form_rest(form) -}}
+        </form>
+    </main>
+{% endblock body %}

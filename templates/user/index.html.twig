@@ -1,0 +1,30 @@
+{% extends 'toolbar.html.twig' %}
+
+{% block title %}Manage Users{% endblock title %}
+
+{% block body %}
+    {{ parent() }}
+
+    <main id="users" class="box">
+        <div class="action-bar">
+            <a href="{{ path('new_user') }}" class="btn">Create user</a>
+        </div>
+        <h1>Manage Users</h1>
+
+        {% if users %}
+            <ul class="manage">
+                {% for user in users %}
+                    <li><a href="{{ path('edit_user', {'userId': user.id}) }}">
+                        {% if user.id == app.user.id %}
+                            <strong>{{ user.firstName }} {{ user.lastName }}</strong>
+                        {% else %}
+                            {{ user.firstName }} {{ user.lastName }}
+                        {% endif %}
+                    </a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="alert alert-warning inner">There is no existing user</p>
+        {% endif %}
+    </main>
+{% endblock body %}
