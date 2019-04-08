@@ -9,7 +9,7 @@
                 name="delete_file" value="{{ file.driveId }}"
                 onclick="if(!confirm('Are you sure ?')) { return false; }">Delete</button>
         Send by: {{ file.addedBy.firstName }} {{ file.addedBy.lastName }}<br>
-        On: {{ file.date.format('Y-m-d') }}<br>
+        Date: {{ file.date.format('Y-m-d') }}<br>
         Size: {{ file.filesize }}<br>
       </td>
     </tr>

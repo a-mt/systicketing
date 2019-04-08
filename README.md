@@ -1,45 +1,41 @@
 
 # Systicketing
 
-## Install
+## Install PHP 7.2
+
+```
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt-get update -y
+
+sudo apt-get install php7.2-curl php7.2-dev php7.2-gd php7.2-intl php7.2-json \
+        php7.2-mysql php7.2-pgsql php7.2-opcache php7.2-bcmath php7.2-mbstring php7.2-soap php7.2-xml -y
+sudo apt-get install libapache2-mod-php7.2 -y
+sudo apt-get install gcc make autoconf libc-dev pkg-config -y
+sudo pecl install apcu -y
+
+sudo bash -c "echo extension=apcu.so > /etc/php/7.2/cli/conf.d/20-apcu.ini"
+sudo bash -c "echo extension=apcu.so > /etc/php/7.2/fpm/conf.d/20-apcu.ini"
+sudo bash -c "echo extension=apcu.so > /etc/php/7.2/apache2/conf.d/20-apcu.ini"
+
+sudo service apache2 stop
+sudo a2dismod php5
+sudo a2enmod php7.2
+sudo service apache2 start
+```
+
+## Install App
 
     composer install
 
-Create a file `.env` and put your settings in it
+* Copy `.env.example` to `.env`.
+* Update the database credentials in it
+* Give access to your Google Drive account (to upload files)
 
-    # This file is a "template" of which env vars need to be defined for your application
-    # Copy this file to .env file for development, create environment variables when deploying to production
-    # https://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
+  ```
+  php bin/console app:create-drive-credentials
+  ```
 
-    ###--------------------------------------------------------
-    ###> symfony/framework-bundle ###
-    ###--------------------------------------------------------
-    APP_ENV=dev
-    APP_SECRET=040e05ddzkev64fb8ce55e0fjgb89bec
-
-    ###--------------------------------------------------------
-    ###> doctrine/doctrine-bundle ###
-    ###--------------------------------------------------------
-    # Format described at http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url
-    # For an SQLite database, use: "sqlite:///%kernel.project_dir%/var/data.db"
-    # Configure your db driver and server_version in config/packages/doctrine.yaml
-
-    DATABASE_URL="mysql://username:password@127.0.0.1:3306/dbname"
-    DATABASE_DRIVER="pdo_mysql"
-    DATABASE_CHARSET="utf8mb4"
-    DATABASE_COLLATE="utf8mb4_unicode_ci"
-    # pdo_pgsql UTF8 UTF8
-
-    ###--------------------------------------------------------
-    ###> google/apiclient ###
-    ###--------------------------------------------------------
-    GOOGLE_CREDENTIALS='{"access_token":"...","token_type":"Bearer","expires_in":3600,"created":1530861260,"refresh_token":"..."}'
-
-Give access to your Google Drive account to upload files
-
-    php bin/console app:create-drive-credentials
-
-Update the `GOOGLE_CREDENTIALS` variable in `.env` with the generated credentials.json file
+* Put the content of the generated credentials.json file in `GOOGLE_CREDENTIALS`
 
 ## Run server
 
@@ -51,3 +47,4 @@ Update the `GOOGLE_CREDENTIALS` variable in `.env` with the generated credential
     git push heroku master
     heroku run 'php bin/console doctrine:schema:create'
     heroku run 'php bin/console doctrine:fixtures:load --env=prod --append'
+

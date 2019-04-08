@@ -583,7 +583,7 @@ class TaskController extends Controller
 
         // Get user credentials
         $credentialsPath = $configPath . 'credentials.json';
-        $accessToken = json_decode($_ENV['GOOGLE_CREDENTIALS'], true);
+        $accessToken = @json_decode($_ENV['GOOGLE_CREDENTIALS'], true);
         $client->setAccessToken($accessToken);
 
         // Refresh token if expired

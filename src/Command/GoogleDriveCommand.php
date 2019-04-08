@@ -15,7 +15,7 @@ class GoogleDriveCommand extends Command
     {
         $this
         ->setName('app:create-drive-credentials')
-        ->setDescription('Create the credentials.json file for Google Drive.');
+        ->setDescription('Retrieve an access token for Google Drive.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -34,7 +34,7 @@ class GoogleDriveCommand extends Command
         $client->setAccessType('offline');
 
         // Get user credentials
-        $credentialsPath = $configPath . 'google_credentials.json';
+        $credentialsPath = '/tmp/google_credentials.json';
         if(file_exists($credentialsPath)) {
             $accessToken = json_decode(file_get_contents($credentialsPath), true);
 
@@ -51,7 +51,6 @@ class GoogleDriveCommand extends Command
             // Use it to request access token
             $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
             file_put_contents($credentialsPath, json_encode($accessToken));
-            printf("Credentials saved to %s\n", $credentialsPath);
         }
         $client->setAccessToken($accessToken);
 
@@ -61,6 +60,8 @@ class GoogleDriveCommand extends Command
             file_put_contents($credentialsPath, json_encode($client->getAccessToken()));
         }
 
-        printf("Credentials path: %s\n", $credentialsPath);
+        echo "Please put this value in GOOGLE_CREDENTIALS :\n";
+        readfile($credentialsPath);
+        echo "\n";
     }
 }
